@@ -2,6 +2,7 @@ package com.example.eshay.balloons;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Point;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Timer;
@@ -44,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Timer timer = new Timer();
 
-    private boolean isTouch = false;
+    private CountDownTimer countDownTimer;
 
-    Animation animation;
+    private long timeBuffer = 61000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +56,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button clickButton = findViewById(R.id.startButton);
+
         clickButton.setOnClickListener( new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                final TextView timeValue = findViewById(R.id.timerValue);
+
                 if (isStarted) {
                     isStarted = false;
                     Button controlButton = (Button) v;
                     controlButton.setText("Resume");
+                    countDownTimer.cancel();
+
                 } else {
                     isStarted = true;
+                    countDownTimer = new CountDownTimer(timeBuffer, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                            timeBuffer = millisUntilFinished;
+                            int secs = (int) (millisUntilFinished / 1000);
+                            int mins = secs / 60;
+                            secs = secs % 60;
+                            timeValue.setText("" + mins + ":" + String.format("%02d", secs));
+                        }
+
+                        public void onFinish() {
+                            timeValue.setText("Time is up!");
+                            isStarted = false;
+                        }
+                    } .start();
+
                     Button controlButton = (Button) v;
                     controlButton.setText("Pause");
                 }
