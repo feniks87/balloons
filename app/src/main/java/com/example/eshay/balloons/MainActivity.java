@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     //Screen
     private int screenWidth;
     private int screenHeight;
+
+    private boolean isStarted = false;
 
     //Images
     private ImageView balloonBlue;
@@ -49,6 +52,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button clickButton = findViewById(R.id.startButton);
+        clickButton.setOnClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (isStarted) {
+                    isStarted = false;
+                    Button controlButton = (Button) v;
+                    controlButton.setText("Resume");
+                } else {
+                    isStarted = true;
+                    Button controlButton = (Button) v;
+                    controlButton.setText("Pause");
+                }
+            }
+        });
 
         balloonBlue = (ImageView)findViewById(R.id.balloonBlue);
         balloonRed = (ImageView)findViewById(R.id.balloonRed);
@@ -109,24 +129,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changePos() {
-        //Blue balloon
-        balloonBlueY -= 10;
-        if (balloonBlue.getY() + balloonBlue.getHeight() < 0) {
-            balloonBlueX = (float)Math.floor(Math.random() * (screenWidth - balloonBlue.getWidth()));
-            balloonBlueY = screenHeight + 100.0f;
-            balloonBlue.setVisibility(View.VISIBLE);
-        }
-        balloonBlue.setX(balloonBlueX);
-        balloonBlue.setY(balloonBlueY);
+        if (isStarted) {
+            //Blue balloon
+            balloonBlueY -= 10;
+            if (balloonBlue.getY() + balloonBlue.getHeight() < 0) {
+                balloonBlueX = (float) Math.floor(Math.random() * (screenWidth - balloonBlue.getWidth()));
+                balloonBlueY = screenHeight + 100.0f;
+                balloonBlue.setVisibility(View.VISIBLE);
+            }
+            balloonBlue.setX(balloonBlueX);
+            balloonBlue.setY(balloonBlueY);
 
-        //Red balloon
-        balloonRedY -= 10;
-        if (balloonRed.getY() + balloonRed.getHeight() < 0) {
-            balloonRedX = (float)Math.floor(Math.random() * (screenWidth - balloonRed.getWidth()));
-            balloonRedY = screenHeight + 100.0f;
-            balloonRed.setVisibility(View.VISIBLE);
+            //Red balloon
+            balloonRedY -= 10;
+            if (balloonRed.getY() + balloonRed.getHeight() < 0) {
+                balloonRedX = (float) Math.floor(Math.random() * (screenWidth - balloonRed.getWidth()));
+                balloonRedY = screenHeight + 100.0f;
+                balloonRed.setVisibility(View.VISIBLE);
+            }
+            balloonRed.setX(balloonRedX);
+            balloonRed.setY(balloonRedY);
         }
-        balloonRed.setX(balloonRedX);
-        balloonRed.setY(balloonRedY);
     }
 }
