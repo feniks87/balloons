@@ -5,9 +5,15 @@ import android.graphics.Point;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Timer timer = new Timer();
 
+    private boolean isTouch = false;
 
+    Animation animation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
         balloonRed = (ImageView)findViewById(R.id.balloonRed);
         balloonGreen = (ImageView)findViewById(R.id.balloonGreen);
 
+
+
+
        //Get screen Size
         WindowManager wm = getWindowManager();
         Display display = wm.getDefaultDisplay();
@@ -54,12 +65,33 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = size.x;
         screenHeight = size.y;
 
+        balloonBlue.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (view == findViewById(R.id.balloonBlue)) {
+                    view.setVisibility(View.GONE);
+                    view.setY(-screenHeight -view.getHeight());
+                }
+                return true;
+            }
+        });
+        balloonRed.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (view == findViewById(R.id.balloonRed)) {
+                    view.setVisibility(View.GONE);
+                    view.setY(-screenHeight -view.getHeight());
+                }
+                return true;
+            }
+        });
+
         //Move to out of screen
         balloonBlue.setX(-80.0f);
         balloonBlue.setY(-80.0f);
         balloonRed.setX(-40.0f);
         balloonRed.setY(-40.0f);
-        balloonGreen.setX(-200.0f);
+        balloonGreen.setX(-80.0f);
         balloonGreen.setY(-80.0f);
 
         //Start timer
@@ -73,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-        }, 0, 20);
+        }, 0, 5);
     }
 
     public void changePos() {
@@ -82,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         if (balloonBlue.getY() + balloonBlue.getHeight() < 0) {
             balloonBlueX = (float)Math.floor(Math.random() * (screenWidth - balloonBlue.getWidth()));
             balloonBlueY = screenHeight + 100.0f;
+            balloonBlue.setVisibility(View.VISIBLE);
         }
         balloonBlue.setX(balloonBlueX);
         balloonBlue.setY(balloonBlueY);
@@ -91,11 +124,9 @@ public class MainActivity extends AppCompatActivity {
         if (balloonRed.getY() + balloonRed.getHeight() < 0) {
             balloonRedX = (float)Math.floor(Math.random() * (screenWidth - balloonRed.getWidth()));
             balloonRedY = screenHeight + 100.0f;
+            balloonRed.setVisibility(View.VISIBLE);
         }
         balloonRed.setX(balloonRedX);
         balloonRed.setY(balloonRedY);
     }
-
-
-
 }
