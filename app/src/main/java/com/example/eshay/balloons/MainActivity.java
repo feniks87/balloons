@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CountDownTimer countDownTimer;
 
-    private long timeBuffer = 61000;
+    private long timeBuffer = 30000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,13 +128,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        balloonGreen.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (view == findViewById(R.id.balloonGreen)) {
+                    view.setVisibility(View.GONE);
+                    view.setY(-screenHeight -view.getHeight());
+                }
+                return true;
+            }
+        });
+
         //Move to out of screen
         balloonBlue.setX(-80.0f);
         balloonBlue.setY(-80.0f);
         balloonRed.setX(-40.0f);
         balloonRed.setY(-40.0f);
-        balloonGreen.setX(-80.0f);
-        balloonGreen.setY(-80.0f);
+        balloonGreen.setX(-30.0f);
+        balloonGreen.setY(-30.0f);
 
         //Start timer
         timer.schedule(new TimerTask() {
@@ -171,6 +182,16 @@ public class MainActivity extends AppCompatActivity {
             }
             balloonRed.setX(balloonRedX);
             balloonRed.setY(balloonRedY);
+
+            //Green balloon
+            balloonGreenY -= 10;
+            if (balloonGreen.getY() + balloonGreen.getHeight() < 0) {
+                balloonGreenX = (float) Math.floor(Math.random() * (screenWidth - balloonGreen.getWidth()));
+                balloonGreenY = screenHeight + 100.0f;
+                balloonGreen.setVisibility(View.VISIBLE);
+            }
+            balloonGreen.setX(balloonGreenX);
+            balloonGreen.setY(balloonGreenY);
         }
     }
 }
