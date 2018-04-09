@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -21,11 +22,15 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    public enum GameState {
+        New, Started, Paused, Finished
+    }
+
     //Screen
     private int screenWidth;
     private int screenHeight;
 
-    private boolean isStarted = false;
+    private GameState gameState = GameState.New;
 
     //Initialize class
     private Handler handler = new Handler();
@@ -36,7 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private int counter;
 
-    private long timeBuffer = 30000;
+    private long gameDuration = 30000;
+
+    private long timeBuffer = gameDuration;
 
     private static int[] images = {R.drawable.blue_baloon, R.drawable.green_baloon, R.drawable.red_baloon};
 
@@ -54,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         balloonCreator.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (isStarted) {
+                if (gameState == GameState.Started) {
                     for (int i = 0; i < new Random().nextInt(3)+ 2; i++) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -92,36 +99,72 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final TextView timeValue = findViewById(R.id.timerValue);
+                Log.d("gameState", gameState.name());
+                switch (gameState) {
 
-                if (isStarted) {
-                    isStarted = false;
-                    Button controlButton = (Button) v;
-                    controlButton.setText("Resume");
-                    countDownTimer.cancel();
+                    case Started:
+                        gameState = GameState.Paused;
+                        Button controlButton = (Button) v;
+                        controlButton.setText("Resume");
+                        countDownTimer.cancel();
+                        break;
+                    case Finished:
+                        timeBuffer = gameDuration;
+                        clearBalloons();
+                        counter = 0;
+                        TextView scoreText = (TextView)findViewById(R.id.scoreText);
+                        scoreText.setText("Score: "+counter);
+                    case Paused: case New:
+                        gameState = GameState.Started;
+                        Button button = (Button) v;
+                        countDownTimer = new CountDownTimer(timeBuffer, 1000) {
+                            public void onTick(long millisUntilFinished) {
+                                timeBuffer = millisUntilFinished;
+                                int secs = (int) (millisUntilFinished / 1000);
+                                int mins = secs / 60;
+                                secs = secs % 60;
+                                timeValue.setText("" + mins + ":" + String.format("%02d", secs));
+                            }
 
-                } else {
-                    isStarted = true;
-                    countDownTimer = new CountDownTimer(timeBuffer, 1000) {
-                        public void onTick(long millisUntilFinished) {
-                            timeBuffer = millisUntilFinished;
-                            int secs = (int) (millisUntilFinished / 1000);
-                            int mins = secs / 60;
-                            secs = secs % 60;
-                            timeValue.setText("" + mins + ":" + String.format("%02d", secs));
-                        }
+                            public void onFinish() {
+                                Button clickButton = findViewById(R.id.startButton);
+                                timeValue.setText("Time is up!");
+                                gameState = GameState.Finished;
+                                clickButton.setText("New");
 
-                        public void onFinish() {
-                            timeValue.setText("Time is up!");
-                            isStarted = false;
-                        }
-                    } .start();
+                            }
+                        } .start();
 
-                    Button controlButton = (Button) v;
-                    controlButton.setText("Pause");
+
+                        button.setText("Pause");
+                        break;
                 }
+                Log.d("gameStateChanged", gameState.name());
             }
         });
     }
+
+    private void clearBalloons() {
+        boolean doBreak = false;
+        ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
+        while (!doBreak) {
+            int childCount = mainLayout.getChildCount();
+            int i;
+            for(i=0; i<childCount; i++) {
+                View currentChild = mainLayout.getChildAt(i);
+                // Change ImageView with your desired type view
+                if (currentChild instanceof ImageView) {
+                    mainLayout.removeView(currentChild);
+                    break;
+                }
+            }
+
+            if (i == childCount) {
+                doBreak = true;
+            }
+        }
+    }
+
 
     private void initScreenSize() {
         WindowManager wm = getWindowManager();
@@ -146,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         balloon.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN && gameState == GameState.Started) {
                     onBalloonTouch((ImageView)view);
                     return true;
                 }
@@ -167,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changePos() {
-        if (isStarted) {
+        if (gameState == GameState.Started) {
             ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
             for (int i = 0; i < mainLayout.getChildCount(); i++) {
 
