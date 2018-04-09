@@ -1,22 +1,17 @@
 package com.example.eshay.balloons;
 
-import android.animation.ObjectAnimator;
 import android.graphics.Point;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Timer timer = new Timer();
 
     private CountDownTimer countDownTimer;
+    private int counter;
+    private TextView scoreText;
 
     private long timeBuffer = 30000;
 
@@ -56,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button clickButton = findViewById(R.id.startButton);
+        scoreText = (TextView)findViewById(R.id.scoreText);
 
         clickButton.setOnClickListener( new View.OnClickListener() {
 
@@ -96,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
         balloonRed = (ImageView)findViewById(R.id.balloonRed);
         balloonGreen = (ImageView)findViewById(R.id.balloonGreen);
 
-
-
-
        //Get screen Size
         WindowManager wm = getWindowManager();
         Display display = wm.getDefaultDisplay();
@@ -110,19 +105,24 @@ public class MainActivity extends AppCompatActivity {
         balloonBlue.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (view == findViewById(R.id.balloonBlue)) {
+                if (view == findViewById(R.id.balloonBlue) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     view.setVisibility(View.GONE);
                     view.setY(-screenHeight -view.getHeight());
+                    counter++;
+                    scoreText.setText("Score: "+counter);
                 }
                 return true;
             }
         });
+
         balloonRed.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (view == findViewById(R.id.balloonRed)) {
+                if (view == findViewById(R.id.balloonRed) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     view.setVisibility(View.GONE);
                     view.setY(-screenHeight -view.getHeight());
+                    counter++;
+                    scoreText.setText("Score: "+counter);
                 }
                 return true;
             }
@@ -131,9 +131,11 @@ public class MainActivity extends AppCompatActivity {
         balloonGreen.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (view == findViewById(R.id.balloonGreen)) {
+                if (view == findViewById(R.id.balloonGreen) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     view.setVisibility(View.GONE);
                     view.setY(-screenHeight -view.getHeight());
+                    counter++;
+                    scoreText.setText("Score: "+counter);
                 }
                 return true;
             }
@@ -158,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-        }, 0, 5);
+        }, 0, 15);
     }
 
     public void changePos() {
