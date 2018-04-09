@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private Timer timer = new Timer();
 
+    private Timer balloonCreator = new Timer();
+
     private CountDownTimer countDownTimer;
     private int counter;
 
@@ -48,11 +50,24 @@ public class MainActivity extends AppCompatActivity {
 
         setStartButton();
 
-        ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
-        for (int i = 0; i < 5; i++) {
-            ImageView balloon = createBalloonImageView();
-            mainLayout.addView(balloon);
-        }
+
+        balloonCreator.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (isStarted) {
+                    for (int i = 0; i < new Random().nextInt(3)+ 2; i++) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageView balloon = createBalloonImageView();
+                                ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
+                                mainLayout.addView(balloon);
+                            }
+                        });
+                    }
+                }
+            }
+        }, 0, 1000);
 
         //Start timer
         timer.schedule(new TimerTask() {
@@ -65,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-        }, 0, 25);
+        }, 0, 15);
     }
 
     private void setStartButton() {
@@ -119,13 +134,14 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView createBalloonImageView() {
         ImageView balloon = new ImageView(this);
-        int imageIndex = new Random().nextInt((images.length));
+        Random random = new Random();
+        int imageIndex = random.nextInt((images.length));
         balloon.setImageResource( images[imageIndex]);
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186, getResources().getDisplayMetrics());
-        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 81, getResources().getDisplayMetrics());
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100+random.nextInt(86), getResources().getDisplayMetrics());
+        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)(height / 2.3), getResources().getDisplayMetrics());
         balloon.setLayoutParams(new ConstraintLayout.LayoutParams(width, height));
         balloon.setX((float) Math.floor(Math.random() * (screenWidth - balloon.getWidth())));
-        balloon.setY(Integer.MIN_VALUE);
+        balloon.setY(screenHeight + 100.0f);
         balloon.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -152,17 +168,20 @@ public class MainActivity extends AppCompatActivity {
     public void changePos() {
         if (isStarted) {
             ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
-            for (int i = 0; i < mainLayout .getChildCount(); i++) {
+            for (int i = 0; i < mainLayout.getChildCount(); i++) {
 
-                View subView = mainLayout.getChildAt(i);
+                final View subView = mainLayout.getChildAt(i);
 
                 if (subView instanceof ImageView) {
-                    float y = subView.getY() - 5;
+                    float y = subView.getY() - 15;
                     if (subView.getY() + subView.getHeight() < 0) {
-                        float x = (float) Math.floor(Math.random() * (screenWidth - subView.getWidth()));
-                        y = screenHeight + 100.0f;
-                        subView.setVisibility(View.VISIBLE);
-                        subView.setX(x);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
+                                mainLayout.removeView(subView);
+                            }
+                        });
                     }
 
                     subView.setY(y);
