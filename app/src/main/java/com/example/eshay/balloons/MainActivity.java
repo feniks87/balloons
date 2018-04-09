@@ -137,11 +137,12 @@ public class MainActivity extends AppCompatActivity {
         Random random = new Random();
         int imageIndex = random.nextInt((images.length));
         balloon.setImageResource( images[imageIndex]);
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100+random.nextInt(86), getResources().getDisplayMetrics());
-        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)(height / 2.3), getResources().getDisplayMetrics());
+        int heightPixels = 86+random.nextInt(100);
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightPixels, getResources().getDisplayMetrics());
+        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Math.round(heightPixels / 2.3), getResources().getDisplayMetrics());
         balloon.setLayoutParams(new ConstraintLayout.LayoutParams(width, height));
-        balloon.setX((float) Math.floor(Math.random() * (screenWidth - balloon.getWidth())));
-        balloon.setY(screenHeight + 100.0f);
+        balloon.setX((float) Math.floor(Math.random() * (screenWidth - width)));
+        balloon.setY(screenHeight + height);
         balloon.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
