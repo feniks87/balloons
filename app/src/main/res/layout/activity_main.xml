@@ -8,24 +8,6 @@
     android:background="@drawable/nebo"
     tools:context="com.example.eshay.balloons.MainActivity">
 
-    <ImageView
-        android:id="@+id/balloonBlue"
-        android:layout_width="81dp"
-        android:layout_height="186dp"
-        android:background="@drawable/blue_baloon" />
-
-    <ImageView
-        android:id="@+id/balloonRed"
-        android:layout_width="81dp"
-        android:layout_height="186dp"
-        android:background="@drawable/red_baloon" />
-
-    <ImageView
-        android:id="@+id/balloonGreen"
-        android:layout_width="81dp"
-        android:layout_height="186dp"
-        android:background="@drawable/green_baloon" />
-
     <TextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"

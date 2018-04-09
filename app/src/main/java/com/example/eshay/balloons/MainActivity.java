@@ -3,8 +3,10 @@ package com.example.eshay.balloons;
 import android.graphics.Point;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,36 +27,50 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isStarted = false;
 
-    //Images
-    private ImageView balloonBlue;
-    private ImageView balloonRed;
-    private ImageView balloonGreen;
-
-    //Position
-    private float balloonBlueX;
-    private float balloonBlueY;
-    private float balloonRedX;
-    private float balloonRedY;
-    private float balloonGreenX;
-    private float balloonGreenY;
-
     //Initialize class
     private Handler handler = new Handler();
     private Timer timer = new Timer();
 
     private CountDownTimer countDownTimer;
     private int counter;
-    private TextView scoreText;
 
     private long timeBuffer = 30000;
+
+    private static int[] images = {R.drawable.blue_baloon, R.drawable.green_baloon, R.drawable.red_baloon};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Get screen Size
+        initScreenSize();
+
+        setStartButton();
+
+        ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
+        for (int i = 0; i < 5; i++) {
+            ImageView balloon = createBalloonImageView();
+            mainLayout.addView(balloon);
+        }
+
+        //Start timer
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        changePos();
+                    }
+                });
+            }
+        }, 0, 25);
+    }
+
+    private void setStartButton() {
         Button clickButton = findViewById(R.id.startButton);
-        scoreText = (TextView)findViewById(R.id.scoreText);
+
 
         clickButton.setOnClickListener( new View.OnClickListener() {
 
@@ -89,111 +106,68 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
-        balloonBlue = (ImageView)findViewById(R.id.balloonBlue);
-        balloonRed = (ImageView)findViewById(R.id.balloonRed);
-        balloonGreen = (ImageView)findViewById(R.id.balloonGreen);
-
-       //Get screen Size
+    private void initScreenSize() {
         WindowManager wm = getWindowManager();
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
         screenHeight = size.y;
+    }
 
-        balloonBlue.setOnTouchListener(new View.OnTouchListener() {
+    private ImageView createBalloonImageView() {
+        ImageView balloon = new ImageView(this);
+        int imageIndex = new Random().nextInt((images.length));
+        balloon.setImageResource( images[imageIndex]);
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 186, getResources().getDisplayMetrics());
+        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 81, getResources().getDisplayMetrics());
+        balloon.setLayoutParams(new ConstraintLayout.LayoutParams(width, height));
+        balloon.setX((float) Math.floor(Math.random() * (screenWidth - balloon.getWidth())));
+        balloon.setY(Integer.MIN_VALUE);
+        balloon.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (view == findViewById(R.id.balloonBlue) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    view.setVisibility(View.GONE);
-                    view.setY(-screenHeight -view.getHeight());
-                    counter++;
-                    scoreText.setText("Score: "+counter);
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    onBalloonTouch((ImageView)view);
+                    return true;
                 }
-                return true;
+                else {
+                    return false;
+                }
             }
         });
+        return balloon;
+    }
 
-        balloonRed.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (view == findViewById(R.id.balloonRed) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    view.setVisibility(View.GONE);
-                    view.setY(-screenHeight -view.getHeight());
-                    counter++;
-                    scoreText.setText("Score: "+counter);
-                }
-                return true;
-            }
-        });
-
-        balloonGreen.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (view == findViewById(R.id.balloonGreen) && motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    view.setVisibility(View.GONE);
-                    view.setY(-screenHeight -view.getHeight());
-                    counter++;
-                    scoreText.setText("Score: "+counter);
-                }
-                return true;
-            }
-        });
-
-        //Move to out of screen
-        balloonBlue.setX(-80.0f);
-        balloonBlue.setY(-80.0f);
-        balloonRed.setX(-40.0f);
-        balloonRed.setY(-40.0f);
-        balloonGreen.setX(-30.0f);
-        balloonGreen.setY(-30.0f);
-
-        //Start timer
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        changePos();
-                    }
-                });
-            }
-        }, 0, 15);
+    private void onBalloonTouch(ImageView view) {
+        view.setVisibility(View.GONE);
+        view.setY(Integer.MIN_VALUE);
+        counter++;
+        TextView scoreText = (TextView)findViewById(R.id.scoreText);
+        scoreText.setText("Score: "+counter);
     }
 
     public void changePos() {
         if (isStarted) {
-            //Blue balloon
-            balloonBlueY -= 10;
-            if (balloonBlue.getY() + balloonBlue.getHeight() < 0) {
-                balloonBlueX = (float) Math.floor(Math.random() * (screenWidth - balloonBlue.getWidth()));
-                balloonBlueY = screenHeight + 100.0f;
-                balloonBlue.setVisibility(View.VISIBLE);
-            }
-            balloonBlue.setX(balloonBlueX);
-            balloonBlue.setY(balloonBlueY);
+            ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
+            for (int i = 0; i < mainLayout .getChildCount(); i++) {
 
-            //Red balloon
-            balloonRedY -= 10;
-            if (balloonRed.getY() + balloonRed.getHeight() < 0) {
-                balloonRedX = (float) Math.floor(Math.random() * (screenWidth - balloonRed.getWidth()));
-                balloonRedY = screenHeight + 100.0f;
-                balloonRed.setVisibility(View.VISIBLE);
-            }
-            balloonRed.setX(balloonRedX);
-            balloonRed.setY(balloonRedY);
+                View subView = mainLayout.getChildAt(i);
 
-            //Green balloon
-            balloonGreenY -= 10;
-            if (balloonGreen.getY() + balloonGreen.getHeight() < 0) {
-                balloonGreenX = (float) Math.floor(Math.random() * (screenWidth - balloonGreen.getWidth()));
-                balloonGreenY = screenHeight + 100.0f;
-                balloonGreen.setVisibility(View.VISIBLE);
+                if (subView instanceof ImageView) {
+                    float y = subView.getY() - 5;
+                    if (subView.getY() + subView.getHeight() < 0) {
+                        float x = (float) Math.floor(Math.random() * (screenWidth - subView.getWidth()));
+                        y = screenHeight + 100.0f;
+                        subView.setVisibility(View.VISIBLE);
+                        subView.setX(x);
+                    }
+
+                    subView.setY(y);
+                }
             }
-            balloonGreen.setX(balloonGreenX);
-            balloonGreen.setY(balloonGreenY);
         }
     }
 }
