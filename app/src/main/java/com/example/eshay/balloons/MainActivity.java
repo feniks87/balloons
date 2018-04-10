@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private Timer balloonCreator = new Timer();
 
     private CountDownTimer countDownTimer;
+
     private int counter;
 
     private long gameDuration = 30000;
@@ -135,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } .start();
 
-
                         button.setText("Pause");
                         break;
                 }
@@ -164,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private void initScreenSize() {
         WindowManager wm = getWindowManager();
