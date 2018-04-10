@@ -53,17 +53,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Get screen Size
         initScreenSize();
-
         setStartButton();
-
 
         balloonCreator.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (gameState == GameState.Started) {
-                    for (int i = 0; i < new Random().nextInt(3)+ 2; i++) {
+                    for (int i = 0; i < new Random().nextInt(2)+ 2; i++) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -100,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final TextView timeValue = findViewById(R.id.timerValue);
-                Log.d("gameState", gameState.name());
                 switch (gameState) {
 
                     case Started:
@@ -132,27 +128,26 @@ public class MainActivity extends AppCompatActivity {
                                 timeValue.setText("Time is up!");
                                 gameState = GameState.Finished;
                                 clickButton.setText("New");
-
+                                clearBalloons();
                             }
                         } .start();
 
                         button.setText("Pause");
                         break;
                 }
-                Log.d("gameStateChanged", gameState.name());
             }
         });
     }
-
+    //Clears balloons before starting game
     private void clearBalloons() {
-        boolean doBreak = false;
+        boolean doClear = false;
         ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
-        while (!doBreak) {
+        while (!doClear) {
             int childCount = mainLayout.getChildCount();
             int i;
             for(i=0; i<childCount; i++) {
                 View currentChild = mainLayout.getChildAt(i);
-                // Change ImageView with your desired type view
+                // Change ImageView with desired type view
                 if (currentChild instanceof ImageView) {
                     mainLayout.removeView(currentChild);
                     break;
@@ -160,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (i == childCount) {
-                doBreak = true;
+                doClear = true;
             }
         }
     }
@@ -179,12 +174,16 @@ public class MainActivity extends AppCompatActivity {
         Random random = new Random();
         int imageIndex = random.nextInt((images.length));
         balloon.setImageResource( images[imageIndex]);
-        int heightPixels = 86+random.nextInt(100);
+        int heightPixels = 90+random.nextInt(100);
+
+        // converts pixels into dp
         int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightPixels, getResources().getDisplayMetrics());
         int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Math.round(heightPixels / 2.3), getResources().getDisplayMetrics());
+
         balloon.setLayoutParams(new ConstraintLayout.LayoutParams(width, height));
         balloon.setX((float) Math.floor(Math.random() * (screenWidth - width)));
         balloon.setY(screenHeight + height);
+
         balloon.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -200,12 +199,19 @@ public class MainActivity extends AppCompatActivity {
         return balloon;
     }
 
+    // Removes balloons when touched
     private void onBalloonTouch(ImageView view) {
-        view.setVisibility(View.GONE);
-        view.setY(Integer.MIN_VALUE);
         counter++;
+        final ImageView toRemove = view;
         TextView scoreText = (TextView)findViewById(R.id.scoreText);
         scoreText.setText("Score: "+counter);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
+                mainLayout.removeView(toRemove);
+            }
+        });
     }
 
     public void changePos() {
