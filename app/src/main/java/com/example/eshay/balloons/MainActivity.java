@@ -1,6 +1,7 @@
 package com.example.eshay.balloons;
 
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static int[] images = {R.drawable.blue_baloon, R.drawable.green_baloon, R.drawable.red_baloon};
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +59,14 @@ public class MainActivity extends AppCompatActivity {
         initScreenSize();
         setStartButton();
 
+
+
+        // Start timer for creating baloons
         balloonCreator.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (gameState == GameState.Started) {
-                    for (int i = 0; i < new Random().nextInt(2)+ 2; i++) {
+                    for (int i = 0; i < new Random().nextInt(3)+ 2; i++) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -74,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 0, 1000);
 
-        //Start timer
+        //Start timer for changing balloons position
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -198,18 +204,31 @@ public class MainActivity extends AppCompatActivity {
         });
         return balloon;
     }
-
+    MediaPlayer balloonMP;
     // Removes balloons when touched
     private void onBalloonTouch(ImageView view) {
         counter++;
         final ImageView toRemove = view;
         TextView scoreText = (TextView)findViewById(R.id.scoreText);
+
+        balloonMP = MediaPlayer.create(this, R.raw.balloon_pop);
+        balloonMP.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                // TODO Auto-generated method stub
+                mp.reset();
+                mp.release();
+            }
+
+        });
         scoreText.setText("Score: "+counter);
-        runOnUiThread(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
                 mainLayout.removeView(toRemove);
+                    balloonMP.start();
             }
         });
     }

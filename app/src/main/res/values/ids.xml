@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="balloon_blue" type="id" />
+    <item name="scoreText" type="id" />
+    <item name="timerValue" type="id"/>
+    <item name="startButton" type="id"/>
 </resources>
