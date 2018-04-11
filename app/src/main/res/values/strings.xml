@@ -2,4 +2,5 @@
     <string name="app_name">Balloons</string>
     <string name="startButton">start</string>
     <string name="scoreText">Score: 0</string>
+    <string name="playButton">play</string>
 </resources>
