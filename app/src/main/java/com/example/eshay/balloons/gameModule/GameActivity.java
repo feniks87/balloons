@@ -1,6 +1,5 @@
-package com.example.eshay.balloons;
+package com.example.eshay.balloons.gameModule;
 
-import android.content.Intent;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
@@ -8,7 +7,6 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -17,6 +15,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.eshay.balloons.R;
 
 import java.util.Random;
 import java.util.Timer;
