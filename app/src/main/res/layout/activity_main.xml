@@ -5,7 +5,7 @@
     android:id="@+id/start_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/start_activity"
+    android:background="@drawable/main_activity"
     tools:context="com.example.eshay.balloons.MainActivity">
 
     <Button
@@ -23,6 +23,6 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>
