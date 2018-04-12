@@ -1,12 +1,15 @@
 package com.example.eshay.balloons.gameModule;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.eshay.balloons.R;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,7 +54,7 @@ public class GameActivity extends AppCompatActivity {
 
     private static int[] images = {R.drawable.blue_baloon, R.drawable.green_baloon, R.drawable.red_baloon};
 
-
+    private ArrayList<ObjectAnimator> animators = new ArrayList<ObjectAnimator>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +76,10 @@ public class GameActivity extends AppCompatActivity {
                                 ImageView balloon = createBalloonImageView();
                                 ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
                                 mainLayout.addView(balloon);
+                                changePos(balloon);
                             }
                         });
+
                     }
                 }
             }
@@ -86,7 +92,7 @@ public class GameActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        changePos();
+                        //changePos();
                     }
                 });
             }
@@ -109,6 +115,10 @@ public class GameActivity extends AppCompatActivity {
                         Button controlButton = (Button) v;
                         controlButton.setText("Resume");
                         countDownTimer.cancel();
+
+                        for (ObjectAnimator animator : animators) {
+                            animator.pause();
+                        }
                         break;
                     case Finished:
                         timeBuffer = gameDuration;
@@ -116,7 +126,11 @@ public class GameActivity extends AppCompatActivity {
                         counter = 0;
                         TextView scoreText = (TextView)findViewById(R.id.scoreText);
                         scoreText.setText("Score: "+counter);
-                    case Paused: case New:
+                    case Paused:
+                        for (ObjectAnimator animator : animators) {
+                            animator.resume();
+                        }
+                    case New:
                         gameState = GameState.Started;
                         Button button = (Button) v;
                         countDownTimer = new CountDownTimer(timeBuffer, 1000) {
@@ -146,6 +160,7 @@ public class GameActivity extends AppCompatActivity {
     //Clears balloons before starting game
     private void clearBalloons() {
         boolean doClear = false;
+        animators.clear();
         ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
         while (!doClear) {
             int childCount = mainLayout.getChildCount();
@@ -187,7 +202,7 @@ public class GameActivity extends AppCompatActivity {
 
         balloon.setLayoutParams(new ConstraintLayout.LayoutParams(width, height));
         balloon.setX((float) Math.floor(Math.random() * (screenWidth - width)));
-        balloon.setY(screenHeight + height);
+        balloon.setY(screenHeight);
 
         balloon.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -215,7 +230,6 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onCompletion(MediaPlayer mp) {
-                // TODO Auto-generated method stub
                 mp.reset();
                 mp.release();
             }
@@ -232,28 +246,35 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    public void changePos() {
-        if (gameState == GameState.Started) {
-            ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
-            for (int i = 0; i < mainLayout.getChildCount(); i++) {
-
-                final View subView = mainLayout.getChildAt(i);
-
-                if (subView instanceof ImageView) {
-                    float y = subView.getY() - 15;
-                    if (subView.getY() + subView.getHeight() < 0) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
-                                mainLayout.removeView(subView);
-                            }
-                        });
-                    }
-
-                    subView.setY(y);
-                }
+    public void changePos(final ImageView balloon) {
+        final ObjectAnimator animator = ObjectAnimator.ofFloat(balloon, "translationY", -700f);
+        animators.add(animator);
+        animator.setDuration(5000);
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
             }
-        }
+
+            @Override
+            public void onAnimationEnd(final Animator animation) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
+                        mainLayout.removeView(balloon);
+                        animators.remove(animator);
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        animator.start();
     }
 }
