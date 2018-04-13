@@ -15,6 +15,8 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,13 +34,11 @@ public class GameActivity extends AppCompatActivity {
         New, Started, Paused, Finished
     }
 
-    //Screen
     private int screenWidth;
     private int screenHeight;
 
     private GameState gameState = GameState.New;
 
-    //Initialize class
     private Handler handler = new Handler();
     private Timer timer = new Timer();
 
@@ -84,19 +84,6 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         }, 0, 1000);
-
-        //Start timer for changing balloons position
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //changePos();
-                    }
-                });
-            }
-        }, 0, 15);
     }
 
     private void setStartButton() {
@@ -145,6 +132,7 @@ public class GameActivity extends AppCompatActivity {
                             public void onFinish() {
                                 Button clickButton = findViewById(R.id.startButton);
                                 timeValue.setText("Time is up!");
+                                blinkText(timeValue);
                                 gameState = GameState.Finished;
                                 clickButton.setText("New");
                                 clearBalloons();
@@ -161,6 +149,7 @@ public class GameActivity extends AppCompatActivity {
     private void clearBalloons() {
         boolean doClear = false;
         animators.clear();
+
         ConstraintLayout mainLayout = (ConstraintLayout)findViewById(R.id.current_layout);
         while (!doClear) {
             int childCount = mainLayout.getChildCount();
@@ -178,6 +167,15 @@ public class GameActivity extends AppCompatActivity {
                 doClear = true;
             }
         }
+    }
+
+    private void blinkText(View view) {
+        Animation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(1000); //You can manage the blinking time with this parameter
+        anim.setStartOffset(20);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+        view.startAnimation(anim);
     }
 
     private void initScreenSize() {

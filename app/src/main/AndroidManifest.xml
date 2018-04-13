@@ -26,10 +26,6 @@
                 android:value=".MainActivity" />
         </activity>
 
-        <service
-            android:name=".PlayMusicService"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>
