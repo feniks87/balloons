@@ -16,7 +16,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:background="@drawable/round_button"
+        android:background="@drawable/rounded_button"
         android:text="@string/playButton"
         android:textColor="@color/btTextColor"
         android:textSize="16sp"

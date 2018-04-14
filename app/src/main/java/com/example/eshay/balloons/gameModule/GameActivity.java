@@ -162,7 +162,6 @@ public class GameActivity extends AppCompatActivity {
                     break;
                 }
             }
-
             if (i == childCount) {
                 doClear = true;
             }

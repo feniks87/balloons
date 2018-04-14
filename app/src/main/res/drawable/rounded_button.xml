@@ -4,5 +4,4 @@
     <solid android:color="@color/btColor"/>
     <corners android:radius="10dp"/>
 
-
 </shape>
