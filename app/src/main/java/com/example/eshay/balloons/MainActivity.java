@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer = MediaPlayer.create(this, R.raw.background);
 
         playButton = (Button) findViewById(R.id.playButton);
+        mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
         playButton.setOnClickListener(new View.OnClickListener() {

@@ -46,7 +46,7 @@ public class Balloon extends Observable {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    observer.update(balloon, BalloonEvent.Touched);
+                    balloon.notifyObservers();
                     return true;
                 } else {
                     return false;
@@ -91,5 +91,10 @@ public class Balloon extends Observable {
 
     public ImageView getView() {
         return balloonImageView;
+    }
+
+    public void notifyObservers() {
+
+        observer.update(this, BalloonEvent.Touched);
     }
 }

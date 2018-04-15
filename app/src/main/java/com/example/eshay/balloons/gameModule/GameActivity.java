@@ -1,6 +1,7 @@
 package com.example.eshay.balloons.gameModule;
 
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,7 @@ public class GameActivity extends AppCompatActivity {
     Animation timerAnimation;
 
     private Game game;
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,9 @@ public class GameActivity extends AppCompatActivity {
         initScreenSize();
         game = new Game(this, screenWidth, screenHeight);
 
+        mediaPlayer = MediaPlayer.create(this, R.raw.background_2);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
 
         setStartButton();
 
@@ -127,5 +132,17 @@ public class GameActivity extends AppCompatActivity {
         display.getSize(size);
         screenWidth = size.x;
         screenHeight = size.y;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mediaPlayer.stop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mediaPlayer.start();
     }
 }
