@@ -9,7 +9,6 @@ import android.widget.Button;
 
 import com.example.eshay.balloons.gameModule.GameActivity;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private Button playButton;
@@ -29,9 +28,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), GameActivity.class);
                 v.getContext().startActivity(intent);
-                //Intent myIntent = new Intent(MainActivity.this, PlayMusicService.class);
-                //startService(myIntent);
-
             }
         });
     }
@@ -41,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         mediaPlayer.stop();
     }
-//
+
     @Override
     public void onResume() {
         super.onResume();
