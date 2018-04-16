@@ -20,8 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mediaPlayer = MediaPlayer.create(this, R.raw.background);
 
-        playButton = (Button) findViewById(R.id.playButton);
-        mediaPlayer.setLooping(true);
+        playButton = findViewById(R.id.playButton);
         mediaPlayer.start();
 
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -36,12 +35,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        mediaPlayer.stop();
+        if (mediaPlayer != null && mediaPlayer.isPlaying())
+            mediaPlayer.pause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mediaPlayer.start();
+        if(mediaPlayer != null && !mediaPlayer.isPlaying())
+            mediaPlayer.start();
     }
 }

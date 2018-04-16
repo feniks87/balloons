@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.View;
@@ -63,14 +64,13 @@ public class GameActivity extends AppCompatActivity {
                                 game.addBalloon();
                             }
                         });
-
                     }
                 }
             }
         }, 0, 1000);
 
         timerAnimation = new AlphaAnimation(0.0f, 1.0f);
-        timerAnimation.setDuration(1000); //You can manage the blinking time with this parameter
+        timerAnimation.setDuration(1000);
         timerAnimation.setStartOffset(20);
         timerAnimation.setRepeatMode(Animation.REVERSE);
         timerAnimation.setRepeatCount(Animation.INFINITE);
@@ -98,6 +98,7 @@ public class GameActivity extends AppCompatActivity {
                     case Started:
                         final TextView timeValue = findViewById(R.id.timerValue);
                         timerAnimation.cancel();
+                        timeValue.clearAnimation();
                         countDownTimer = new CountDownTimer(timeBuffer, 1000) {
                             public void onTick(long millisUntilFinished) {
                                 timeBuffer = millisUntilFinished;
@@ -137,12 +138,14 @@ public class GameActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        mediaPlayer.stop();
+        if(mediaPlayer != null && mediaPlayer.isPlaying())
+            mediaPlayer.pause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mediaPlayer.start();
+        if(mediaPlayer != null && !mediaPlayer.isPlaying())
+            mediaPlayer.start();
     }
 }
