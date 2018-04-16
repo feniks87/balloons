@@ -37,6 +37,7 @@ public class GameActivity extends AppCompatActivity {
     Animation timerAnimation;
 
     private Game game;
+
     private MediaPlayer mediaPlayer;
 
     @Override
@@ -69,6 +70,7 @@ public class GameActivity extends AppCompatActivity {
             }
         }, 0, 1000);
 
+        // Animation for Timer text
         timerAnimation = new AlphaAnimation(0.0f, 1.0f);
         timerAnimation.setDuration(1000);
         timerAnimation.setStartOffset(20);

@@ -24,7 +24,6 @@ public class Balloon extends Observable {
 
     private Observer observer;
 
-
     public Balloon(AppCompatActivity activity, int maxWidth, int maxHeight, Observer mainObserver) {
         observer = mainObserver;
         final Balloon balloon = this;
@@ -34,7 +33,7 @@ public class Balloon extends Observable {
         balloonImageView.setImageResource( images[imageIndex]);
         int heightPixels = 90+random.nextInt(100);
 
-        // converts pixels into dp
+        // Converts pixels into dp
         int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightPixels, activity.getResources().getDisplayMetrics());
         int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, Math.round(heightPixels / 2.3), activity.getResources().getDisplayMetrics());
 

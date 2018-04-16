@@ -74,9 +74,7 @@ public class Game implements Observer {
             case Touched:
                 if (gameState == GameState.Started) {
                     score++;
-
                     TextView scoreText = activity.findViewById(R.id.scoreText);
-
                     balloonMP = MediaPlayer.create(activity, R.raw.balloon_pop);
                     balloonMP.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -125,10 +123,10 @@ public class Game implements Observer {
 
     public void finishGame() {
         gameState = GameState.Finished;
-        cleareBalloons();
+        clearBalloons();
     }
 
-    private void cleareBalloons() {
+    private void clearBalloons() {
         ConstraintLayout mainLayout = activity.findViewById(R.id.current_layout);
         for (Balloon balloon : balloons) {
             mainLayout.removeView(balloon.getView());
